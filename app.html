@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Chat Pro API — DeepSeek V4 接口服务</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6}
+section{padding:60px 20px;max-width:960px;margin:0 auto}
+h1{font-size:42px;color:#f0f6fc;text-align:center}
+h2{font-size:28px;color:#f0f6fc;text-align:center;margin-bottom:32px}
+h3{font-size:18px;color:#f0f6fc;margin-bottom:8px}
+.tag{display:inline-block;background:rgba(88,166,255,0.15);color:#58a6ff;padding:5px 14px;border-radius:20px;font-size:13px;margin-bottom:16px;text-align:center}
+.sub{text-align:center;color:#8b949e;font-size:18px;margin:12px 0 40px;max-width:600px;margin-left:auto;margin-right:auto}
+
+/* Cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:900px;margin:0 auto}
+.card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:28px 24px;text-align:center;position:relative;transition:border-color .2s}
+.card:hover{border-color:#58a6ff}
+.card.popular{border-color:#3fb950}
+.card .tier{font-size:14px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.card .price{font-size:36px;font-weight:700;color:#f0f6fc;margin:8px 0}
+.card .price sub{font-size:14px;color:#8b949e;font-weight:400}
+.card .tokens{font-size:20px;color:#58a6ff;font-weight:600;margin:8px 0 20px}
+.card .feat{font-size:13px;color:#8b949e;padding:4px 0}
+.card .btn{display:block;margin-top:20px;padding:12px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;cursor:pointer;border:none;color:#fff;width:100%}
+.card .btn.blue{background:#238636}
+.card .btn.green{background:#1f6feb}
+.card .btn.gold{background:#9e6a03}
+.popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#3fb950;color:#000;padding:3px 14px;border-radius:10px;font-size:12px;font-weight:700}
+
+/* Code block */
+.code{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px 20px;overflow-x:auto;margin:16px 0;font-family:Consolas,monospace;font-size:13px;line-height:1.8}
+.code .key{color:#ff7b72}
+.code .val{color:#a5d6ff}
+.code .c{color:#8b949e}
+.examples{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+
+/* Steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center}
+.steps .num{width:40px;height:40px;border-radius:50%;background:#1f6feb;color:#fff;line-height:40px;margin:0 auto 12px;font-weight:700;font-size:18px}
+
+.dash{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px 20px;margin:12px 0}
+.dash .l{color:#8b949e;font-size:13px}
+.dash .v{color:#f0f6fc;font-size:18px;font-weight:600}
+
+table{width:100%;border-collapse:collapse}
+td,th{padding:10px 12px;text-align:left;border-bottom:1px solid #30363d;font-size:13px}
+th{color:#8b949e;font-weight:400;font-size:12px}
+
+.bar{background:#21262d;border-radius:4px;height:8px;overflow:hidden;margin-top:6px}
+.bar-fill{height:100%;background:#1f6feb;border-radius:4px}
+
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999;justify-content:center;align-items:center}
+.modal.show{display:flex}
+.modal-box{background:#161b22;padding:24px;border-radius:12px;width:380px;border:1px solid #30363d}
+.modal-box input{display:block;width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #30363d;background:#0d1117;color:#fff;font-size:14px}
+.modal-box .btn{width:100%;padding:12px;margin-top:8px;border-radius:8px;border:none;font-size:14px;cursor:pointer;color:#fff}
+
+#result{margin-top:16px;text-align:center}
+#result .apikey{font-size:20px;font-weight:700;color:#3fb950;letter-spacing:1px;background:#161b22;border:1px solid #30363d;padding:12px;border-radius:6px;word-break:break-all}
+
+footer{text-align:center;padding:30px;color:#484f58;font-size:12px}
+@media(max-width:768px){.cards,.examples,.steps{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section style="padding-top:80px">
+  <div style="text-align:center"><span class="tag">DeepSeek V4 驱动 · OpenAI 兼容</span></div>
+  <h1>AI API Service</h1>
+  <p class="sub">调用 GPT-4 级别的 AI 模型，价格只有官方的 1/3。一行代码切换，毫秒级响应。</p>
+</section>
+
+<!-- Pricing -->
+<section>
+  <h2>选择套餐</h2>
+  <div class="cards">
+    <!-- Starter -->
+    <div class="card" id="card-starter">
+      <div class="tier">Starter</div>
+      <div class="price">$9<sub>/月</sub></div>
+      <div class="tokens">100万 Token</div>
+      <div class="feat">OpenAI 兼容接口</div>
+      <div class="feat">适合个人开发测试</div>
+      <div class="feat">≈ 1,500 次对话</div>
+      <div class="feat">7天有效期</div>
+      <button class="btn blue" onclick="buy('starter', '9.00', '100万')">购买 Starter</button>
+    </div>
+    <!-- Pro -->
+    <div class="card popular" id="card-pro">
+      <div class="popular-badge">推荐</div>
+      <div class="tier">Pro</div>
+      <div class="price">$29<sub>/月</sub></div>
+      <div class="tokens">500万 Token</div>
+      <div class="feat">OpenAI 兼容接口</div>
+      <div class="feat">适合小团队 / 项目</div>
+      <div class="feat">≈ 7,500 次对话</div>
+      <div class="feat">30天有效期</div>
+      <button class="btn green" onclick="buy('pro', '29.00', '500万')">购买 Pro</button>
+    </div>
+    <!-- Max -->
+    <div class="card" id="card-max">
+      <div class="tier">Max</div>
+      <div class="price">$99<sub>/月</sub></div>
+      <div class="tokens">2000万 Token</div>
+      <div class="feat">OpenAI 兼容接口</div>
+      <div class="feat">适合商业应用 / API 服务</div>
+      <div class="feat">≈ 30,000 次对话</div>
+      <div class="feat">30天有效期</div>
+      <button class="btn gold" onclick="buy('max', '99.00', '2000万')">购买 Max</button>
+    </div>
+  </div>
+  <p style="text-align:center;color:#484f58;font-size:12px;margin-top:16px">Token 不够用？随时续费叠加。$1 = 10万 Token 大致比例。</p>
+</section>
+
+<!-- How to use -->
+<section>
+  <h2>一分钟接入</h2>
+  <div class="steps">
+    <div>
+      <div class="num">1</div>
+      <h3>购买 API Key</h3>
+      <p style="color:#8b949e;font-size:14px">选择上面的套餐，PayPal 付款后秒得 Key</p>
+    </div>
+    <div>
+      <div class="num">2</div>
+      <h3>改一行代码</h3>
+      <p style="color:#8b949e;font-size:14px">把 OpenAI SDK 的 base_url 换成我们的地址</p>
+    </div>
+    <div>
+      <div class="num">3</div>
+      <h3>开箱即用</h3>
+      <p style="color:#8b949e;font-size:14px">所有 OpenAI 生态工具无缝兼容</p>
+    </div>
+  </div>
+
+  <div class="examples">
+    <div>
+      <h3 style="font-size:15px;margin-bottom:8px">Python (OpenAI SDK)</h3>
+      <div class="code">
+<span class="c"># 只需改这两行</span>
+<span class="key">from</span> openai <span class="key">import</span> OpenAI
+client = OpenAI(
+    <span class="val">api_key</span>=<span class="val">"你的APIKey"</span>,
+    <span class="val">base_url</span>=<span class="val">"https://grooving-revenge-tiger.ngrok-free.dev/v1"</span>
+)
+response = client.chat.completions.create(
+    model=<span class="val">"deepseek-chat"</span>,
+    messages=[{<span class="val">"role"</span>:<span class="val">"user"</span>, <span class="val">"content"</span>:<span class="val">"hello"</span>}]
+)
+<span class="c"># 就这么简单</span></div>
+    </div>
+    <div>
+      <h3 style="font-size:15px;margin-bottom:8px">cURL</h3>
+      <div class="code">
+curl <span class="val">https://grooving-revenge-tiger.ngrok-free.dev/v1/chat/completions</span> \
+  -H <span class="val">"Authorization: Bearer 你的APIKey"</span> \
+  -H <span class="val">"Content-Type: application/json"</span> \
+  -d <span class="val">'{"model":"deepseek-chat","messages":[{"role":"user","content":"hello"}]}'</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard -->
+<section id="dashboard" style="display:none">
+  <h2>用量面板</h2>
+  <div style="display:flex;gap:20px;margin-bottom:20px">
+    <div class="dash" style="flex:1">
+      <div class="l">API Key</div>
+      <div class="v" id="dash-key" style="font-size:14px;word-break:break-all">-</div>
+    </div>
+    <div class="dash" style="flex:1">
+      <div class="l">已用 / 总额度</div>
+      <div class="v" id="dash-usage">-</div>
+      <div class="bar"><div class="bar-fill" id="dash-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:#8b949e">输入 API Key 查看用量：</p>
+  <div style="display:flex;gap:8px;margin-top:4px">
+    <input id="query-key" placeholder="输入你的 API Key" style="flex:1;padding:10px;border-radius:6px;border:1px solid #30363d;background:#0d1117;color:#fff;font-size:14px">
+    <button onclick="queryUsage()" style="padding:10px 20px;border-radius:6px;border:none;background:#1f6feb;color:#fff;cursor:pointer;font-weight:600">查询</button>
+  </div>
+  <div id="usage-error" style="color:#f85149;font-size:13px;margin-top:8px;display:none"></div>
+</section>
+
+<!-- FAQ -->
+<section>
+  <h2>常见问题</h2>
+  <div style="max-width:600px;margin:0 auto">
+    <div style="margin-bottom:20px"><strong style="color:#f0f6fc">Q：和 DeepSeek 官方什么区别？</strong><br><span style="color:#8b949e;font-size:14px">底层模型一样，但我们按需套餐更便宜。官方按量计费，没有固定套餐。</span></div>
+    <div style="margin-bottom:20px"><strong style="color:#f0f6fc">Q：支持什么模型？</strong><br><span style="color:#8b949e;font-size:14px">deepseek-chat 和 deepseek-reasoner 两个模型。</span></div>
+    <div style="margin-bottom:20px"><strong style="color:#f0f6fc">Q：和 OpenAI ChatGPT 兼容吗？</strong><br><span style="color:#8b949e;font-size:14px">完全兼容。改了 base_url 之后，SDK / LangChain / Dify 等工具直接能用。</span></div>
+    <div style="margin-bottom:20px"><strong style="color:#f0f6fc">Q：超额了怎么办？</strong><br><span style="color:#8b949e;font-size:14px">API 返回 429，告诉你额度用完了。再买一个套餐，Key 继续用。</span></div>
+    <div style="margin-bottom:20px"><strong style="color:#f0f6fc">Q：能退款吗？</strong><br><span style="color:#8b949e;font-size:14px">24小时内 Key 未被调用过，全额退款。</span></div>
+  </div>
+</section>
+
+<footer>AI API Service · contact@aichatpro.io</footer>
+
+<!-- Payment Modal -->
+<div class="modal" id="payModal">
+  <div class="modal-box">
+    <h3 id="pay-title" style="color:#f0f6fc;margin-bottom:16px">购买 Starter — $9</h3>
+    <div id="paypal-container"></div>
+    <div id="result"></div>
+    <button style="background:#30363d;color:#c9d1d9;margin-top:12px" class="btn" onclick="closePayModal()">关闭</button>
+  </div>
+</div>
+
+<script>
+let currentTier = 'starter', currentPrice = '9.00';
+
+function buy(tier, price, tokens) {
+  currentTier = tier; currentPrice = price;
+  document.getElementById('pay-title').textContent = `购买 ${tier} — $${price} (${tokens} Token)`;
+  document.getElementById('payModal').classList.add('show');
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('paypal-container').innerHTML = '';
+  loadPayPal();
+}
+
+function closePayModal() {
+  document.getElementById('payModal').classList.remove('show');
+}
+
+async function loadPayPal() {
+  const res = await fetch('/api/config');
+  const cfg = await res.json();
+  const script = document.createElement('script');
+  script.src = `https://www.paypal.com/sdk/js?client-id=${cfg.paypalClientId}&currency=USD`;
+  script.onload = () => {
+    paypal.Buttons({
+      createOrder: async () => {
+        const r = await fetch('/api/create-order', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({tier: currentTier, price: currentPrice})
+        });
+        const d = await r.json();
+        if(d.error) throw new Error(d.error);
+        return d.orderId;
+      },
+      onApprove: async (data) => {
+        const r = await fetch('/api/capture-order', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({orderId: data.orderID, tier: currentTier})
+        });
+        const d = await r.json();
+        if(d.error) {
+          document.getElementById('result').innerHTML = '<p style="color:#f85149;margin-top:12px">❌ '+d.error+'</p>';
+        } else {
+          document.getElementById('result').innerHTML = '<p style="color:#3fb950;margin-top:12px">🎉 购买成功！</p><div class="apikey">'+d.apikey+'</div><p style="color:#8b949e;font-size:12px;margin-top:4px">请妥善保管，此 Key 不会再次显示</p>';
+          document.getElementById('paypal-container').innerHTML = '';
+        }
+      },
+      onError: () => {
+        document.getElementById('result').innerHTML = '<p style="color:#f85149;margin-top:12px">❌ 支付失败，请重试</p>';
+      }
+    }).render('#paypal-container');
+  };
+  document.head.appendChild(script);
+}
+
+async function queryUsage() {
+  const key = document.getElementById('query-key').value.trim();
+  const errEl = document.getElementById('usage-error');
+  errEl.style.display = 'none';
+  if(!key) { errEl.textContent = '请输入 API Key'; errEl.style.display = 'block'; return; }
+  const r = await fetch('/api/usage', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({apikey: key})
+  });
+  const d = await r.json();
+  if(d.error) { errEl.textContent = d.error; errEl.style.display = 'block'; return; }
+  document.getElementById('dash-key').textContent = d.key;
+  document.getElementById('dash-usage').textContent = `${d.usedTokens.toLocaleString()} / ${d.totalTokens.toLocaleString()} Token`;
+  const pct = d.totalTokens > 0 ? Math.min(100, Math.round(d.usedTokens / d.totalTokens * 100)) : 0;
+  document.getElementById('dash-bar').style.width = pct + '%';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('dashboard').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

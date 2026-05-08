@@ -138,7 +138,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/" or self.path == "/index.html":
-            self._serve("index.html")
+            self._serve("app.html")
         elif self.path == "/api/config":
             self._json({"paypalClientId": PP_CLIENT_ID})
         else:
