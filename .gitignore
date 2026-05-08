@@ -1,0 +1,7 @@
+*.db
+__pycache__/
+*.pyc
+cover.png
+generate_cover.py
+twitter_post.md
+marketing_plan.md
